@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+
 
 class QuestionsController extends Controller
 {
@@ -11,11 +14,20 @@ class QuestionsController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $questions = Question::latest()->paginate(5);
-        return view('questions.index', compact('questions'));
+{
+    DB::enableQueryLog(); // start logging
 
-    }
+    $questions = Question::with('user')->latest()->paginate(10); 
+
+  return  view('questions.index', compact('questions'))->render();
+
+    // // dump the logged queries
+    // dd(DB::getQueryLog());
+
+    // (normally you would return the view, but dd() stops execution)
+    // return view('questions.index', compact('questions'));
+}
+
 
     /**
      * Show the form for creating a new resource.

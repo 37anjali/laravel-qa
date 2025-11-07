@@ -5,10 +5,7 @@
     <div class="bg-white shadow-md rounded-2xl overflow-hidden">
         <div class="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
             <h2 class="text-2xl font-bold text-gray-800">All Questions</h2>
-            <a href="{{ route('questions.create') }}"
-               class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition duration-200">
-                + Ask Question
-            </a>
+            
         </div>
 
         <div class="p-6 space-y-6">
@@ -16,10 +13,15 @@
                 <div class="border border-gray-100 rounded-xl p-5 hover:shadow-md transition duration-200">
                     <div class="flex justify-between items-start">
                         <h3 class="text-xl font-semibold text-gray-800 hover:text-indigo-600 transition">
-                            <a href="{{ route('questions.show', $question->id) }}">
+                            <a href="{{ $question->url }}">
                                 {{ $question->title }}
                             </a>
                         </h3>
+                        <p class="lead">
+                            Asked by
+                            <a href="{{ $question->user->url }}">{{ $question->user->name }}</a>
+                            <small class="text-muted">{{ $question->created_date }}</small>
+                        </p>
                         <span class="text-sm text-gray-500">
                             {{ $question->created_at->diffForHumans() }}
                         </span>
