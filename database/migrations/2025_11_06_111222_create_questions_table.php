@@ -12,18 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('questions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->engine = 'InnoDB'; // Ensure the same storage engine as users table
+
+            $table->id(); // Creates BIGINT UNSIGNED
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('body');
-            $table->unsignedInteger('views')->default(0);
-            $table->unsignedInteger('answers')->default(0);
+            $table->unsignedBigInteger('views')->default(0);
+            $table->unsignedBigInteger('answers')->default(0);
             $table->integer('votes')->default(0);
-            $table->unsignedInteger('best_answer_id')->nullable();
-            $table->unsignedInteger('user_id');
-            $table->timestamps();
+            $table->unsignedBigInteger('best_answer_id')->nullable();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            // ✅ Fix: Use unsignedBigInteger to match users.id
+            $table->foreignId('user_id')
+                  ->constrained('users')
+                  ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
