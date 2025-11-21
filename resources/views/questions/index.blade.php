@@ -8,7 +8,14 @@
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="bg-white shadow rounded-lg">
         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 class="text-2xl font-semibold text-gray-800">All Questions</h2>
+            <h2 class="text-2xl font-semibold text-red-800 align items-center">All Questions</h2>
+          <div class="ml-auto">
+    <a href="{{ route('questions.create') }}" 
+       class="px-4 py-2 border border-gray-400 text-red-700 rounded hover:bg-gray-100 transition">
+        Ask Question
+    </a>
+</div>
+
         </div>
 
         <div class="p-6 space-y-8">
