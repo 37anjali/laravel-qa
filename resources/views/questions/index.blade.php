@@ -19,6 +19,7 @@
         </div>
 
         <div class="p-6 space-y-8">
+            @include('layouts._messages')
             @foreach ($questions as $question)
                 <div class="flex items-start border-b border-gray-100 pb-6">
                     <!-- Counters -->

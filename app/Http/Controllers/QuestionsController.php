@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AskQuestionRequest;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,9 +42,15 @@ class QuestionsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AskQuestionRequest $request)
     {
-        //
+        // dd('store');
+
+
+        $request->user()->questions()->create($request->only('title', 'body'));
+
+        return redirect()->route('questions.index');
+        return redirect()->route('questions.index')->with('success', "your question has been submitted");
     }
 
     /**
