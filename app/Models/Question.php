@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 class Question extends Model
 {
     use HasFactory;
+   
 
     protected $fillable = [
         'title',
@@ -29,7 +30,7 @@ class Question extends Model
 
     public function getUrlAttribute()
     {
-        return  route("questions.show", $this->id);
+        return  route("questions.show", $this->slug);
     }
 
     public function getCreatedDateAttribute()
@@ -47,6 +48,13 @@ class Question extends Model
         }
         return "unanswered";
      }
+public function getBodyHtmlAttribute()
+{
+    $parsedown = new \Parsedown();
+    $parsedown->setSafeMode(true);
+
+    return $parsedown->text($this->body);
+}
 
     /**
      * Define relationship: a question belongs to a user
