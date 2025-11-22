@@ -6,11 +6,17 @@ use App\Http\Requests\AskQuestionRequest;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+
 
 
 
 class QuestionsController extends Controller
 {
+
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -70,16 +76,25 @@ class QuestionsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Question $question)
-    {
-        return view("questions.edit", compact('question'));
-    }
+  public function edit(Question $question)
+{
+    $this->authorize('update', $question);
+
+    return view("questions.edit", compact('question'));
+}
+
+
+
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(AskQuestionRequest $request, Question $question)
     {
+
+         $this->authorize('update', $question);
+
          $question->update($request->only('title','body'));
 
          return redirect('/questions')->with('success',"Your question has been updated.");
@@ -90,6 +105,8 @@ class QuestionsController extends Controller
      */
     public function destroy(Question $question)
     {
+
+        $this->authorize('delete', $question);
         $question->delete();
         return redirect('/questions')->with('success', "your question has been deleted.");
     }
