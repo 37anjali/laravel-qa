@@ -49,9 +49,18 @@
 
                     <!-- Question Content -->
                     <div class="flex-1">
-                        <h3 class="text-xl font-semibold text-blue-600 hover:underline">
-                            <a href="{{ $question->url }}">{{ $question->title }}</a>
-                        </h3>
+                       <div class="flex items-center">
+                      <h3 class="text-xl font-semibold text-blue-600 hover:underline">
+                    <a href="{{ $question->url }}">{{ $question->title }}</a>
+                   </h3>
+
+                   <div class="ml-auto">
+                  <a href="{{ route('questions.edit', $question->id) }}" class="px-3 py-1 text-sm border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition">
+                     Edit
+                      </a>
+                    </div>
+
+                    </div>
 
                         <p class="text-sm text-gray-500 mt-1">
                             Asked by 
