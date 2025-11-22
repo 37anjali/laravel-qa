@@ -58,7 +58,21 @@
                   <a href="{{ route('questions.edit', $question->id) }}" class="px-3 py-1 text-sm border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition">
                      Edit
                       </a>
+
+                     <form class="inline-block" method="POST" action="{{ route('questions.destroy', $question->id) }}">
+    @method('DELETE')
+    @csrf
+
+    <button type="submit"
+        class="px-3 py-1 text-sm border border-red-500 text-red-600 rounded hover:bg-red-600 hover:text-white transition"
+        onclick="return confirm('Are you sure?')">
+        Delete
+    </button>
+</form>
+
                     </div>
+
+
 
                     </div>
 
