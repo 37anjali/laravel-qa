@@ -35,7 +35,7 @@
                                 <div
                                     class="{{ $question->answers > 0 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-800' }} rounded-md px-3 py-1">
                                     <span class="block text-lg font-semibold">
-                                        {{ $question->answers }}
+                                        {{ $question->answers_count }}
                                     </span>
                                     <span>{{ Str::plural('answer', $question->answers) }}</span>
                                 </div>
