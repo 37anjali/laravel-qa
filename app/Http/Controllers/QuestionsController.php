@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Http\Controllers\Controller;
+
 
 
 
@@ -20,6 +22,13 @@ class QuestionsController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+// public function __construct()
+// {
+//     $this->middleware('auth', ['except' => ['index', 'show']]);
+// }
+
+
     public function index()
 {
     DB::enableQueryLog(); // start logging

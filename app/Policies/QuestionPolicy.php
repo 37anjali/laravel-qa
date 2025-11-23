@@ -14,6 +14,6 @@ class QuestionPolicy
 
     public function delete(User $user, Question $question)
     {
-        return $user->id === $question->user_id;
+        return $user->id === $question->user_id  && $question->answers < 1;
     }
 }
