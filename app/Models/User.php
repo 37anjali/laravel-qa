@@ -50,7 +50,10 @@ class User extends Authenticatable
 
 
     
-
+public function answers()
+{
+    return $this->hasMany(Answer::class);
+}
 
     /**
      * Get the attributes that should be cast.

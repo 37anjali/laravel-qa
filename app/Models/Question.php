@@ -56,6 +56,11 @@ public function getBodyHtmlAttribute()
     return $parsedown->text($this->body);
 }
 
+public function answers()
+{
+    return $this->hasMany(Answer::class);
+}
+
     /**
      * Define relationship: a question belongs to a user
      */
