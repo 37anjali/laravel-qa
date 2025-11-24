@@ -47,13 +47,12 @@ class User extends Authenticatable
         return '#';
     }
 
-
+             public function answers()
+             {
+                         return $this->hasMany(Answer::class);
+           }
 
     
-public function answers()
-{
-    return $this->hasMany(Answer::class);
-}
 
     /**
      * Get the attributes that should be cast.

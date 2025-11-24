@@ -33,4 +33,19 @@ class Answer extends Model
 
         return $parsedown->text($this->body);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When a new answer is created
+        static::created(function ($answer) {
+            if ($answer->question) {
+                // Increment answers_count column
+              $answer->question->increment('answers_count');
+
+
+            }
+        });
+    }
 }
