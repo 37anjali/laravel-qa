@@ -66,4 +66,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+     public function getAvatarAttribute()
+{
+    $email = strtolower(trim($this->email));
+    $hash = md5($email);
+    $size = 20;
+    return "https://www.gravatar.com/avatar/{$hash}?s=200&d=identicon";
+    
+}
+
 }

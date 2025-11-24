@@ -57,15 +57,13 @@
 
                                 <div class="ml-auto">
 
-                                   @if (Auth::user()->can('update', $question))
-
+                                    @if (Auth::user()->can('update', $question))
                                         <a href="{{ route('questions.edit', $question->id) }}"
                                             class="px-3 py-1 text-sm border border-blue-500 text-blue-500 rounded hover:bg-blue-500 hover:text-white transition">
                                             Edit
                                         </a>
                                     @endif
                                     @if (Auth::user()->can('delete', $question))
-
                                         <form class="inline-block" method="POST"
                                             action="{{ route('questions.destroy', $question->id) }}">
                                             @method('DELETE')
