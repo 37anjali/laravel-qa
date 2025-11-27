@@ -6,10 +6,13 @@ use App\Models\Answer;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 class AnswersController extends Controller
 {
+
+    use AuthorizesRequests;
     /**
      * Store a newly created answer.
      */
@@ -33,6 +36,7 @@ class AnswersController extends Controller
      */
     public function edit(Question $question, Answer $answer)
     {
+        $this->authorize('update',$answer);
         return view('answers.edit', compact('question', 'answer'));
     }
 
@@ -41,6 +45,8 @@ class AnswersController extends Controller
      */
     public function update(Request $request, Question $question, Answer $answer)
     {
+
+        $this->authorize('update', $answer);
         $validated = $request->validate([
             'body' => 'required|string'
         ]);
