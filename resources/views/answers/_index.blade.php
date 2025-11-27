@@ -33,7 +33,7 @@
                 </button>
 
                 <!-- Best Answer -->
-                <button class="text-green-600 hover:text-green-700 transition text-2xl mt-2">
+                <button class="{{ $answer->status }} text-green-600 hover:text-green-700 transition text-2xl mt-2">
                     <i class="fas fa-check"></i>
                 </button>
 
