@@ -1,112 +1,159 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4 py-8">
+<div class="max-w-5xl mx-auto px-4 py-10">
 
-    <!-- Question Box -->
-    <div class="bg-white shadow rounded-lg border border-gray-200">
-        
+    <!-- QUESTION CARD -->
+    <div class="bg-white shadow-lg rounded-xl border border-gray-200 p-8">
+
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h1 class="text-2xl font-semibold text-gray-800">
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">
                 {{ $question->title }}
             </h1>
 
             <a href="{{ route('questions.index') }}"
-               class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 
-                      rounded-md hover:bg-gray-100 transition">
-                Back to all Questions
+               class="px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white hover:bg-gray-100 shadow-sm transition">
+                ← Back to all Questions
             </a>
         </div>
 
-        <!-- Body -->
-        <div class="px-6 py-6 prose max-w-none">
-            {!! $question->body_html !!}
-        </div>
-    </div>
+        <!-- QUESTION BLOCK -->
+        <div class="flex gap-8">
 
-    <!-- Answers Section -->
-    <div class="mt-8 bg-white shadow rounded-lg border border-gray-200">
+            <!-- VOTE CONTROLS (Horizontal & Beautiful) -->
+            <div class="flex flex-col items-center gap-3 bg-gray-50 px-4 py-3 rounded-xl shadow border border-gray-200">
 
-        <!-- Answer Header -->
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">
-                {{ $question->answers_count }}
-                {{ \Illuminate\Support\Str::plural('Answer', $question->answers_count) }}
-            </h2>
-        </div>
+                <!-- Upvote -->
+                <button class="text-gray-400 hover:text-green-600 transition text-3xl">
+                    <i class="fas fa-caret-up"></i>
+                </button>
 
-       <!-- Answers Section -->
-<div class="mt-8 bg-white shadow rounded-lg border border-gray-200">
+                <!-- Vote count -->
+                <span class="text-2xl font-bold text-gray-800">
+                    {{ $question->votes_count ?? 1230 }}
+                </span>
 
-    <!-- Answer Header -->
-    <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800">
-            {{ $question->answers_count }}
-            {{ \Illuminate\Support\Str::plural('Answer', $question->answers_count) }}
-        </h2>
-    </div>
+                <!-- Downvote -->
+                <button class="text-gray-400 hover:text-red-600 transition text-3xl">
+                    <i class="fas fa-caret-down"></i>
+                </button>
 
-    <!-- Answers -->
-    <div class="divide-y divide-gray-200">
+                <!-- Favorite -->
+                <button class="text-yellow-500 hover:text-yellow-600 transition text-2xl mt-2 flex flex-col items-center">
+                    <i class="fas fa-star"></i>
+                    <span class="text-xs font-semibold">{{ $question->favorites_count ?? 123 }}</span>
+                </button>
 
-        @foreach($question->answers as $answer)
-        <div class="p-6">
-
-            <!-- Answer Body -->
-            <div class="prose prose-sm max-w-none text-gray-800">
-                {!! $answer->body_html !!}
             </div>
 
-            <!-- Footer - username + avatar + votes bottom-right -->
-            <div class="mt-6 flex items-center justify-between">
+            <!-- QUESTION CONTENT -->
+            <div class="flex-1">
 
-                <!-- Left Side: Empty / Optional buttons area -->
-                <div></div>
+                <div class="prose max-w-none text-gray-800">
+                    {!! $question->body_html !!}
+                </div>
 
-                <!-- Right Side: Avatar + name + view profile + votes -->
-                <div class="flex items-center space-x-4">
+                <!-- USER INFO -->
+                <div class="mt-6 flex justify-end">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3">
 
-                    <!-- Votes -->
-                    <span class="px-3 py-1 bg-gray-100 rounded text-xs text-gray-700">
-                        Votes: {{ $answer->votes_count }}
-                    </span>
+                        <img src="{{ $question->user->avatar }}" 
+                             class="w-12 h-12 rounded-full border shadow object-cover">
 
-                    <!-- View Profile -->
-                    <a href="{{ $answer->user->url }}"
-                       class="text-blue-600 text-sm hover:underline">
-                        View Profile
-                    </a>
+                        <div>
+                            <p class="text-gray-900 font-semibold">
+                                <a href="{{ $question->user->url }}" class="hover:underline">
+                                    {{ $question->user->name }}
+                                </a>
+                            </p>
+                            <p class="text-xs text-gray-500">
+                                Asked {{ $question->created_date }}
+                            </p>
+                        </div>
 
-                    <!-- Username -->
-                    <div class="text-right">
-                        <p class="font-semibold text-gray-800">{{ $answer->user->name }}</p>
-                        <p class="text-xs text-gray-500">
-                            {{ $answer->created_at->diffForHumans() }}
-                        </p>
                     </div>
-
-                    <!-- Avatar -->
-                    <img 
-                        src="{{ $answer->user->avatar }}" 
-                        alt="{{ $answer->user->name }}"
-                        class="w-10 h-10 rounded-full shadow border object-cover"
-                    >
                 </div>
 
             </div>
-
         </div>
-        @endforeach
-
-        @if($question->answers_count == 0)
-            <p class="p-6 text-gray-600">No answers yet. Be the first to answer!</p>
-        @endif
 
     </div>
 
-</div>
+    <!-- ANSWERS SECTION -->
+    <div class="mt-10 bg-white shadow-lg rounded-xl border border-gray-200 p-8">
 
+        <h2 class="text-xl font-bold text-gray-900 mb-4">
+            {{ $question->answers_count }} 
+            {{ \Illuminate\Support\Str::plural('Answer', $question->answers_count) }}
+        </h2>
+
+        <div class="divide-y divide-gray-200">
+
+            @foreach ($question->answers as $answer)
+            <div class="py-6 flex gap-8">
+
+                <!-- VOTE CONTROLS -->
+                <div class="flex flex-col items-center gap-3 bg-gray-50 px-4 py-3 rounded-xl shadow border border-gray-200">
+
+                    <!-- Upvote -->
+                    <button class="text-gray-400 hover:text-green-600 transition text-3xl">
+                        <i class="fas fa-caret-up"></i>
+                    </button>
+
+                    <!-- Count -->
+                    <span class="text-2xl font-bold text-gray-800">
+                        {{ $answer->votes_count ?? 1230 }}
+                    </span>
+
+                    <!-- Downvote -->
+                    <button class="text-gray-400 hover:text-red-600 transition text-3xl">
+                        <i class="fas fa-caret-down"></i>
+                    </button>
+
+                    <!-- Best Answer -->
+                    <button class="text-green-600 hover:text-green-700 transition text-2xl mt-2">
+                        <i class="fas fa-check"></i>
+                    </button>
+
+                </div>
+
+                <!-- ANSWER BODY -->
+                <div class="flex-1">
+
+                    <div class="prose max-w-none text-gray-800">
+                        {!! $answer->body_html !!}
+                    </div>
+
+                    <!-- USER INFO -->
+                    <div class="mt-6 flex justify-end">
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3">
+
+                            <img src="{{ $answer->user->avatar }}" 
+                                 class="w-12 h-12 rounded-full border shadow object-cover">
+
+                            <div>
+                                <p class="text-gray-900 font-semibold">
+                                    <a href="{{ $answer->user->url }}" class="hover:underline">
+                                        {{ $answer->user->name }}
+                                    </a>
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    Answered {{ $answer->created_date }}
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            @endforeach
+
+        </div>
+
+    </div>
 
 </div>
 @endsection
