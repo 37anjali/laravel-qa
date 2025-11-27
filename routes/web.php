@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnswersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\HomeController;
@@ -20,6 +21,10 @@ Route::get('/dashboard', function () {
     Route::resource('questions', QuestionsController::class)->except('show');
    Route::get('/questions/{question:slug}', [QuestionsController::class, 'show'])
     ->name('questions.show');
+
+ Route::resource('questions.answers', AnswersController::class)
+    ->only(['store', 'edit', 'update', 'destroy']);
+
 
 
 
