@@ -55,6 +55,7 @@
 
                         @if (Auth::user() && Auth::user()->can('update', $answer))
                             <a href="{{ route('questions.answers.edit', [$question->id, $answer->id]) }}"
+
                                class="px-4 py-2 text-sm border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-500 hover:text-white transition shadow-sm">
                                 Edit
                             </a>
