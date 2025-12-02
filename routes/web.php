@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\AcceptAnswerController;
 use App\Http\Controllers\AnswersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,6 +27,10 @@ Route::get('/dashboard', function () {
 
  Route::resource('questions.answers', AnswersController::class)
     ->only(['store', 'edit', 'update', 'destroy']);
+
+  
+
+Route::post('/answers/{answer}/accept', [AcceptAnswerController ::class, 'accept'])->name('answers.accept');
 
 
 

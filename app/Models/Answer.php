@@ -53,6 +53,16 @@ class Answer extends Model
             : '';
     }
 
+    public function getIsBestAttribute()
+    {
+        return $this->isBest();
+    }
+
+    public function isBest()
+    {
+          return $this->id === $this->question->best_answer_id;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Model Events (Laravel 12)
@@ -68,4 +78,9 @@ class Answer extends Model
             $answer->question()->decrement('answers_count');
         });
     }
+
+
+
 }
+
+
