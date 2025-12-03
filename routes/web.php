@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcceptAnswerController;
 use App\Http\Controllers\AnswersController;
+use App\Http\Controllers\FavoritesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionsController;
 use App\Http\Controllers\HomeController;
@@ -31,6 +32,9 @@ Route::get('/dashboard', function () {
   
 
 Route::post('/answers/{answer}/accept', [AcceptAnswerController ::class, 'accept'])->name('answers.accept');
+ Route::post('/questions/{question}/favorites', [FavoritesController::class,'store'])->name('questions.favorite');
+Route::delete('/questions/{question}/favorites', [FavoritesController::class,'destroy'])->name('questions.unfavorite');
+
 
 
 

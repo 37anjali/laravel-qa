@@ -1,95 +1,111 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-5xl mx-auto px-4 py-10">
+<div class="max-w-6xl mx-auto px-4 py-6">
 
-    <!-- QUESTION CARD -->
-    <div class="bg-white shadow-lg rounded-xl border border-gray-200 p-8">
+    <div class="bg-white shadow rounded-lg p-6">
+        
+        <!-- Title + Back Button -->
+        <div class="flex items-center mb-6">
+            <h1 class="text-3xl font-bold">{{ $question->title }}</h1>
 
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">
-                {{ $question->title }}
-            </h1>
-
-            <a href="{{ route('questions.index') }}"
-               class="px-4 py-2 text-sm border border-gray-300 rounded-lg bg-white hover:bg-gray-100 shadow-sm transition">
-                ← Back to all Questions
-            </a>
+            <div class="ml-auto">
+                <a href="{{ route('questions.index') }}" 
+                   class="px-4 py-2 border border-gray-400 text-gray-700 rounded-lg hover:bg-gray-100">
+                    Back to all Questions
+                </a>
+            </div>
         </div>
 
-        <!-- QUESTION BLOCK -->
-        <div class="flex gap-8">
+        <hr class="my-4">
 
-            <!-- VOTE CONTROLS -->
-            <div class="flex flex-col items-center gap-3 bg-gray-50 px-4 py-3 rounded-xl shadow border border-gray-200">
+        <!-- MAIN CONTENT WRAPPER -->
+        <div class="flex space-x-6">
 
-                <!-- Upvote -->
-                <button class="text-gray-400 hover:text-green-600 transition text-3xl">
-                    <i class="fas fa-caret-up"></i>
-                </button>
+            <!-- VOTE + FAVORITE SECTION -->
+            <div class="flex flex-col items-center">
 
-                <!-- Count -->
-                <span class="text-2xl font-bold text-gray-800">
-                    {{ $question->votes_count ?? 1230 }}
-                </span>
+                <!-- Vote Up -->
+                <a title="This question is useful" 
+                   class="cursor-pointer text-gray-500 hover:text-green-600">
+                    <i class="fas fa-caret-up fa-3x"></i>
+                </a>
 
-                <!-- Downvote -->
-                <button class="text-gray-400 hover:text-red-600 transition text-3xl">
-                    <i class="fas fa-caret-down"></i>
-                </button>
+                <!-- Vote Count -->
+                <span class="text-xl font-semibold my-1">1230</span>
+
+                <!-- Vote Down -->
+                <a title="This question is not useful" 
+                   class="cursor-pointer text-gray-400 hover:text-red-600">
+                    <i class="fas fa-caret-down fa-3x"></i>
+                </a>
 
                 <!-- Favorite -->
-                <button class="text-yellow-500 hover:text-yellow-600 transition text-2xl mt-2">
-                    <i class="fas fa-star"></i>
-                    <span class="text-xs font-semibold">{{ $question->favorites_count ?? 123 }}</span>
-                </button>
+                <a title="Click to mark as favorite question (Click again to undo)"
+                   class="mt-3 cursor-pointer flex flex-col items-center
+                        {{ Auth::guest() ? 'opacity-50' : ($question->is_favorited ? 'text-yellow-500' : 'text-gray-400') }}"
+                   onclick="event.preventDefault(); document.getElementById('favorite-question-{{ $question->id }}').submit();">
+
+                    <i class="fas fa-star fa-2x"></i>
+                    <span class="text-sm">{{ $question->favorites_count }}</span>
+                </a>
+
+                <form id="favorite-question-{{ $question->id }}" 
+                      method="POST"
+                      action="/questions/{{ $question->id }}/favorites"
+                      class="hidden">
+                    @csrf
+                    @if ($question->is_favorited)
+                        @method('DELETE')
+                    @endif
+                </form>
 
             </div>
 
-            <!-- QUESTION CONTENT -->
+            <!-- QUESTION BODY -->
             <div class="flex-1">
 
-                <div class="prose max-w-none text-gray-800">
+                <div class="prose max-w-none">
                     {!! $question->body_html !!}
                 </div>
 
                 <!-- USER INFO -->
-                <div class="mt-6 flex justify-end">
-                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm flex items-center gap-3">
+                <div class="mt-6 text-right">
+                    <span class="text-gray-500 text-sm block">Asked {{ $question->created_date }}</span>
 
-                        <img src="{{ $question->user->avatar }}" 
-                             class="w-12 h-12 rounded-full border shadow object-cover">
+                    <div class="flex items-center justify-end mt-2 space-x-3">
+                        <a href="{{ $question->user->url }}">
+                            <img src="{{ $question->user->avatar }}"
+                                 class="w-10 h-10 rounded-full border">
+                        </a>
 
                         <div>
-                            <p class="text-gray-900 font-semibold">
-                                <a href="{{ $question->user->url }}" class="hover:underline">
-                                    {{ $question->user->name }}
-                                </a>
-                            </p>
-                            <p class="text-xs text-gray-500">
-                                Asked {{ $question->created_date }}
-                            </p>
+                            <a href="{{ $question->user->url }}"
+                               class="text-blue-600 font-semibold hover:underline">
+                                {{ $question->user->name }}
+                            </a>
                         </div>
-
                     </div>
                 </div>
 
             </div>
+
         </div>
 
     </div>
 
+    <!-- Answers Section -->
+    <div class="mt-8">
+        @include ('answers._index', [
+            'answers' => $question->answers,
+            'answersCount' => $question->answers_count,
+        ])
+    </div>
 
-    <!-- ANSWERS LIST SECTION -->
-    @include('answers._index', [
-        'answers' => $question->answers,
-        'answersCount' => $question->answers_count,
-    ])
-
-    <!-- ANSWER CREATE FORM (BOTTOM ME Show Hoga) -->
-    @include('answers._create', ['question' => $question])
-
+    <!-- Create Answer -->
+    <div class="mt-6">
+        @include ('answers._create')
+    </div>
 
 </div>
 @endsection
