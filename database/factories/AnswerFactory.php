@@ -17,7 +17,7 @@ class AnswerFactory extends Factory
             'question_id' => Question::inRandomOrder()->value('id') ?? Question::factory(),
             'user_id'     => User::inRandomOrder()->value('id') ?? User::factory(),
             'body'        => $this->faker->paragraphs(rand(2, 6), true),
-            'votes_count' => rand(0, 10),
+            // 'votes_count' => rand(0, 10),
         ];
     }
 }

@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Question;
-use App\Models\User;
-use Parsedown;
 
 class Answer extends Model
 {
@@ -14,13 +11,13 @@ class Answer extends Model
 
     protected $fillable = ['body', 'user_id', 'question_id'];
 
-    protected $appends = ['body_html', 'created_date', 'status'];
+    protected $appends = [
+        'body_html',
+        'created_date',
+        'status',
+        'is_best',
+    ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    */
     public function question()
     {
         return $this->belongsTo(Question::class);
@@ -31,49 +28,11 @@ class Answer extends Model
         return $this->belongsTo(User::class);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Accessors (Laravel 12: use getXxxAttribute)
-    |--------------------------------------------------------------------------
-    */
     public function getBodyHtmlAttribute()
     {
-        return Parsedown::instance()->text($this->body ?? '');
+        return \Parsedown::instance()->text($this->body);
     }
 
-    public function getCreatedDateAttribute()
-    {
-        return $this->created_at?->diffForHumans();
-    }
-
-    public function getStatusAttribute()
-    {
-        return $this->id === $this->question->best_answer_id
-            ? 'vote-accepted'
-            : '';
-    }
-
-    public function getIsBestAttribute()
-    {
-        return $this->isBest();
-    }
-
-    public function isBest()
-    {
-          return $this->id === $this->question->best_answer_id;
-    }
-
-
-    public function votes()
-    {
-        return $this->morphToMany(User::class, 'votable');
-        
-    }
-    /*
-    |--------------------------------------------------------------------------
-    | Model Events (Laravel 12)
-    |--------------------------------------------------------------------------
-    */
     protected static function booted()
     {
         static::created(function ($answer) {
@@ -85,8 +44,41 @@ class Answer extends Model
         });
     }
 
+    public function getCreatedDateAttribute()
+    {
+        return $this->created_at ? $this->created_at->diffForHumans() : null;
+    }
 
+    public function getStatusAttribute()
+    {
+        return $this->isBest() ? 'vote-accepted' : '';
+    }
 
+    public function getIsBestAttribute()
+    {
+        return $this->isBest();
+    }
+
+    public function isBest()
+    {
+        return $this->question && $this->id === $this->question->best_answer_id;
+    }
+
+    // Votes Relationship (Polymorphic)
+    public function votes()
+    {
+        return $this->morphToMany(User::class, 'votable')
+                    ->withPivot('vote')
+                    ->withTimestamps();
+    }
+
+    public function upVotes()
+    {
+        return $this->votes()->wherePivot('vote', 1);
+    }
+
+    public function downVotes()
+    {
+        return $this->votes()->wherePivot('vote', -1);
+    }
 }
-
-
