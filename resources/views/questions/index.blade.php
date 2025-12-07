@@ -26,7 +26,7 @@
                         <div class="flex flex-col text-center mr-6 text-sm font-medium text-gray-600">
                             <!-- Votes -->
                             <div class="mb-2">
-                                <span class="block text-lg font-semibold text-gray-800">{{ $question->votes }}</span>
+                                <span class="block text-lg font-semibold text-gray-800">{{ $question->votes_count }}</span>
                                 <span>{{ Str::plural('vote', $question->votes) }}</span>
                             </div>
 

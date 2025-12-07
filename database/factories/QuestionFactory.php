@@ -23,9 +23,10 @@ class QuestionFactory extends Factory
             'slug'    => Str::slug($title),
             'body'    => $this->faker->paragraphs(rand(3, 7), true),
             'views'   => rand(0, 10),
-           'answers_count' => rand(0, 10),
-            'votes'   => rand(-3, 10),
+        //    'answers_count' => rand(0, 10),
+            // 'votes_count'   => rand(-3, 10),
             'user_id' => User::factory(),
         ];
     }
 }
+   

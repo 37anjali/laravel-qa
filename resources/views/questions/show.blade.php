@@ -25,20 +25,44 @@
             <!-- VOTE + FAVORITE SECTION -->
             <div class="flex flex-col items-center">
 
-                <!-- Vote Up -->
-                <a title="This question is useful" 
-                   class="cursor-pointer text-gray-500 hover:text-green-600">
-                    <i class="fas fa-caret-up fa-3x"></i>
-                </a>
+               <!-- Vote Up -->
+<a title="This question is useful"
+   class="vote-up {{ Auth::guest() ? 'opacity-50 pointer-events-none' : '' }} cursor-pointer text-gray-500 hover:text-green-600 transition"
+   onclick="event.preventDefault(); document.getElementById('up-vote-question-{{ $question->id }}').submit();">
+   
+   <i class="fas fa-caret-up text-4xl"></i>
+</a>
+
+<form id="up-vote-question-{{ $question->id }}"
+      method="POST"
+      action="/questions/{{ $question->id }}/vote"
+      class="hidden">
+    @csrf
+    <input type="hidden" name="vote" value="1">
+</form>
+
+
+
+
 
                 <!-- Vote Count -->
-                <span class="text-xl font-semibold my-1">1230</span>
+                <span class="text-xl font-semibold my-1">{{ $question->votes_count}}</span>
+<!-- Vote Down -->
+<a title="This question is not useful"
+   class="vote-down {{ Auth::guest() ? 'opacity-50 pointer-events-none' : '' }} cursor-pointer text-gray-400 hover:text-red-600 transition"
+   onclick="event.preventDefault(); document.getElementById('down-vote-question-{{ $question->id }}').submit();">
 
-                <!-- Vote Down -->
-                <a title="This question is not useful" 
-                   class="cursor-pointer text-gray-400 hover:text-red-600">
-                    <i class="fas fa-caret-down fa-3x"></i>
-                </a>
+    <i class="fas fa-caret-down text-4xl"></i>
+</a>
+
+<form id="down-vote-question-{{ $question->id }}"
+      method="POST"
+      action="/questions/{{ $question->id }}/vote"
+      class="hidden">
+    @csrf
+    <input type="hidden" name="vote" value="-1">
+</form>
+
 
                 <!-- Favorite -->
                 <a title="Click to mark as favorite question (Click again to undo)"
