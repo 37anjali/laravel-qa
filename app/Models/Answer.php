@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\VotableTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Answer extends Model
 {
     use HasFactory;
+    use VotableTrait;
 
     protected $fillable = ['body', 'user_id', 'question_id'];
 

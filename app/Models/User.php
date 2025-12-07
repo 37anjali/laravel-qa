@@ -11,8 +11,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     protected $fillable = [
-        'name', 
-        'email', 
+        'name',
+        'email',
         'password',
     ];
 
@@ -21,7 +21,15 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
+
+    // --------------------------
     // Relationships
+    // --------------------------
+
     public function questions()
     {
         return $this->hasMany(Question::class);
@@ -34,89 +42,65 @@ class User extends Authenticatable
 
     public function favorites()
     {
-        return $this->belongsToMany(Question::class, 'favorites')
-                    ->withTimestamps();
+        return $this->belongsToMany(Question::class, 'favorites')->withTimestamps();
     }
 
-    // Votable Polymorphic Relations
     public function voteQuestions()
     {
-        return $this->morphedByMany(Question::class, 'votable')
-                    ->withPivot('vote')
-                    ->withTimestamps();
+        return $this->morphedByMany(Question::class, 'votable')->withPivot('vote')->withTimestamps();
     }
 
     public function voteAnswers()
     {
-        return $this->morphedByMany(Answer::class, 'votable')
-                    ->withPivot('vote')
-                    ->withTimestamps();
+        return $this->morphedByMany(Answer::class, 'votable')->withPivot('vote')->withTimestamps();
     }
 
-    // Voting Logic
+    // --------------------------
+    // Voting Methods
+    // --------------------------
+
     public function voteQuestion(Question $question, $vote)
     {
-        $existing = $this->voteQuestions()
-                         ->where('votable_id', $question->id)
-                         ->first();
-
-        if ($existing) {
-            $this->voteQuestions()->updateExistingPivot($question->id, ['vote' => $vote]);
-        } else {
-            $this->voteQuestions()->attach($question->id, ['vote' => $vote]);
-        }
-
-        $this->updateQuestionVoteCount($question);
+        $this->_vote($this->voteQuestions(), $question, $vote);
     }
 
     public function voteAnswer(Answer $answer, $vote)
     {
-        $existing = $this->voteAnswers()
-                         ->where('votable_id', $answer->id)
-                         ->first();
+        $this->_vote($this->voteAnswers(), $answer, $vote);
+    }
 
-        if ($existing) {
-            $this->voteAnswers()->updateExistingPivot($answer->id, ['vote' => $vote]);
+    private function _vote($relationship, $model, $vote)
+    {
+        if ($relationship->where('votable_id', $model->id)->exists()) {
+            $relationship->updateExistingPivot($model->id, ['vote' => $vote]);
         } else {
-            $this->voteAnswers()->attach($answer->id, ['vote' => $vote]);
+            $relationship->attach($model->id, ['vote' => $vote]);
         }
 
-        $this->updateAnswerVoteCount($answer);
+        // Refresh and update vote count
+        $model->load('votes');
+
+        $downVotes = (int) $model->downVotes()->sum('vote');
+        $upVotes   = (int) $model->upVotes()->sum('vote');
+
+        $model->votes_count = $upVotes + $downVotes;
+        $model->save();
     }
 
-    // Helpers to update counts
-    protected function updateQuestionVoteCount(Question $question)
-    {
-        $question->load('votes');
-
-        $up = $question->upVotes()->sum('vote');   // votes = 1
-        $down = $question->downVotes()->sum('vote'); // votes = -1
-
-        $question->votes_count = $up + $down;
-        $question->save();
-    }
-
-    protected function updateAnswerVoteCount(Answer $answer)
-    {
-        $answer->load('votes');
-
-        $up = $answer->upVotes()->sum('vote');
-        $down = $answer->downVotes()->sum('vote');
-
-        $answer->votes_count = $up + $down;
-        $answer->save();
-    }
-
+    // --------------------------
     // Accessors
-    public function getAvatarAttribute()
-    {
-        return "https://www.gravatar.com/avatar/" 
-            . md5(strtolower(trim($this->email))) 
-            . "?s=32";
-    }
+    // --------------------------
 
     public function getUrlAttribute()
     {
         return '#';
+    }
+
+    public function getAvatarAttribute()
+    {
+        $email = $this->email;
+        $size  = 32;
+
+        return "https://www.gravatar.com/avatar/" . md5(strtolower(trim($email))) . "?s={$size}";
     }
 }

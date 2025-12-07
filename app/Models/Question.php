@@ -2,71 +2,73 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Traits\VotableTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Parsedown;
 
 class Question extends Model
 {
-    use HasFactory;
-   
+    use VotableTrait;
 
-    protected $fillable = [
-        'title',
-        'slug',
-        'body',
-        'user_id',
+    protected $fillable = ['title', 'body'];
+
+    protected $appends = [
+        'url',
+        'created_date',
+        'status',
+        'body_html',
+        'is_favorited',
+        'favorites_count'
     ];
 
-    /**
-     * Automatically generate slug from title
-     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // -------------------------------
+    // Mutators
+    // -------------------------------
     public function setTitleAttribute($value)
     {
         $this->attributes['title'] = $value;
         $this->attributes['slug'] = Str::slug($value);
     }
 
-
+    // -------------------------------
+    // Accessors
+    // -------------------------------
     public function getUrlAttribute()
     {
-        return  route("questions.show", $this->slug);
+        return route("questions.show", $this->slug);
     }
 
     public function getCreatedDateAttribute()
     {
-         return $this->created_at->diffForHumans();
+        return $this->created_at->diffForHumans();
     }
 
-     public function getStatusAttribute()
-     {
-        if ($this->answers_count > 0){
-            if($this->best_answer_id){
-                 return "answered-accepted";
-            }
-            return "answered";
-        }
-        return "unanswered";
-     }
-public function getBodyHtmlAttribute()
-{
-    $parsedown = new \Parsedown();
-    $parsedown->setSafeMode(true);
-
-    return $parsedown->text($this->body);
-}
-
-public function answers()
-{
-    return $this->hasMany(Answer::class);
-}
-
-    /**
-     * Define relationship: a question belongs to a user
-     */
-    public function user()
+    public function getStatusAttribute()
     {
-        return $this->belongsTo(User::class);
+        if ($this->answers_count > 0) {
+            return $this->best_answer_id ? "answered-accepted" : "answered";
+        }
+
+        return "unanswered";
+    }
+
+    public function getBodyHtmlAttribute()
+    {
+        return Parsedown::instance()->text($this->body);
+    }
+
+    // -------------------------------
+    // Relationships
+    // -------------------------------
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
     }
 
     public function acceptBestAnswer(Answer $answer)
@@ -75,51 +77,29 @@ public function answers()
         $this->save();
     }
 
-
-
-
-
     public function favorites()
-{
-    return $this->belongsToMany(User::class,'favorites')->withTimestamps();//, 'question_id','user_id', );
-}
+    {
+        return $this->belongsToMany(User::class, 'favorites')
+            ->withTimestamps();
+    }
 
+    // -------------------------------
+    // Favorite Helpers
+    // -------------------------------
+    public function isFavorited()
+    {
+        return $this->favorites()
+            ->where('user_id', auth()->id())
+            ->exists();
+    }
 
-public function isFavorited()
-{
-    return $this->favorites()->where('user_id', auth()->id())->count() > 0;
+    public function getIsFavoritedAttribute()
+    {
+        return $this->isFavorited();
+    }
 
-}
-
-public function getIsFavoritedAttribute()
-{
-    return $this->isFavorited();
-}
-
-public function getFavoritesCountAttribute()
-{
-    return $this->favorites->count();
-}
-
-public function votes()
-{
-    return $this->morphToMany(User::class, 'votable')
-                ->withPivot('vote')
-                ->withTimestamps();
-}
-
-public function upVotes()
-{
-    return $this->votes()->wherePivot('vote', 1);
-}
-
-public function downVotes()
-{
-    return $this->votes()->wherePivot('vote', -1);
-}
-
-
-
-
-
+    public function getFavoritesCountAttribute()
+    {
+        return $this->favorites()->count();
+    }
 }
