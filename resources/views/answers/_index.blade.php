@@ -96,13 +96,10 @@
 
                             <!-- User Info -->
                             <div class="text-right">
-                                <span class="text-gray-500 text-sm">Answered {{ $answer->created_date }}</span>
-                                <div class="flex items-center justify-end mt-2 gap-2">
-                                    <img src="{{ $answer->user->avatar }}" class="w-10 h-10 rounded-full">
-                                    <a href="{{ $answer->user->url }}" class="text-blue-600 font-medium">
-                                        {{ $answer->user->name }}
-                                    </a>
-                                </div>
+                                @include('shared._author',[
+                                    'model' => $answer,
+                                    'label' => 'answered'
+                                ])
                             </div>
 
                         </div>

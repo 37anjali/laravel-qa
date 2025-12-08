@@ -93,25 +93,26 @@
                     {!! $question->body_html !!}
                 </div>
 
-                <!-- USER INFO -->
-                <div class="mt-6 text-right">
-                    <span class="text-gray-500 text-sm block">Asked {{ $question->created_date }}</span>
+               <!-- USER INFO -->
+<div class="grid grid-cols-3 gap-4 items-center">
+    
+    <!-- Empty column -->
+    <div></div>
 
-                    <div class="flex items-center justify-end mt-2 space-x-3">
-                        <a href="{{ $question->user->url }}">
-                            <img src="{{ $question->user->avatar }}"
-                                 class="w-10 h-10 rounded-full border">
-                        </a>
+    <!-- Empty column -->
+    <div></div>
 
-                        <div>
-                            <a href="{{ $question->user->url }}"
-                               class="text-blue-600 font-semibold hover:underline">
-                                {{ $question->user->name }}
-                            </a>
-                        </div>
-                    </div>
-                </div>
+    <!-- Author include -->
+    <div class="flex justify-end">
+        @include('shared._author', [
+            'model' => $question,
+            'label' => 'asked'
+        ])
+    </div>
 
+</div>
+
+               </div>
             </div>
 
         </div>
